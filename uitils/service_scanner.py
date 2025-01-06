@@ -58,3 +58,4 @@ if __name__ == "__main__":
             print(
                 f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
     else:
+        print(f"Error: {result['message']}")

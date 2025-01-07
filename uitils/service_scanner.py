@@ -53,3 +53,8 @@ if __name__ == "__main__":
     if result['status'] == "success":
         print("\nService Scan Results:")
         print("Port\tState\tName\tProduct\tVersion")
+        print("----------------------------------------------------------")
+        for service in result['services']:
+            print(
+                f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
+    else:

@@ -50,3 +50,6 @@ if __name__ == "__main__":
     target_ip = input("Enter the IP address to scan for services: ")
     # Perform the service scan
     result = service_scan(target_ip)
+    if result['status'] == "success":
+        print("\nService Scan Results:")
+        print("Port\tState\tName\tProduct\tVersion")

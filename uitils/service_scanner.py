@@ -48,3 +48,5 @@ def service_scan(target_ip):
 if __name__ == "__main__":
     # Input IP address
     target_ip = input("Enter the IP address to scan for services: ")
+    # Perform the service scan
+    result = service_scan(target_ip)

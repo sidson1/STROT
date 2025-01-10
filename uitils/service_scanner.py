@@ -9,3 +9,5 @@ def service_scan(target_ip):
     Returns:
         dict: Information about the services or an error message.
     """
+    # Create an Nmap PortScanner object
+    nm = nmap.PortScanner()

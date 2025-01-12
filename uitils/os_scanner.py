@@ -44,3 +44,11 @@ if __name__ == "__main__":
 
     # Analyze the OS
     result = analyze_os(target_ip)
+    if result['status'] == "success":
+        print("\nOperating System Analysis:")
+        for match in result['os_matches']:
+            print(f"Name: {match['name']}\nAccuracy: {match['accuracy']}%\n")
+            break
+    else:
+        print(f"Error: {result['message']}")
+

@@ -38,3 +38,9 @@ def analyze_os(target_ip):
             "status": "error",
             "message": str(e)
         }
+if __name__ == "__main__":
+    # Input IP address
+    target_ip = input("Enter the IP address to analyze: ")
+
+    # Analyze the OS
+    result = analyze_os(target_ip)

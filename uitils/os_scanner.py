@@ -11,3 +11,6 @@ def analyze_os(target_ip):
     Returns:
         dict: Information about the operating system or an error message.
     """
+    # Create an Nmap PortScanner object
+    nm = nmap.PortScanner()
+

@@ -34,3 +34,13 @@ if __name__ == "__main__":
 
     print("Scanning network...")
     devices = scan_network(ip_range)
+
+    # Print the results
+    if devices:
+        print("\nDevices found in the network:")
+        print("IP Address\t\tMAC Address")
+        print("-----------------------------------------")
+        for device in devices:
+            print(f"{device['ip']}\t\t{device['mac']}")
+    else:
+        print("No devices found.")

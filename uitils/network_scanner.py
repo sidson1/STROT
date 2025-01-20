@@ -31,3 +31,6 @@ def scan_network(ip_range):
 if __name__ == "__main__":
     # Define the IP range to scan
     ip_range = input("Enter the IP range to scan (e.g., 192.168.202.211/24): ")
+
+    print("Scanning network...")
+    devices = scan_network(ip_range)

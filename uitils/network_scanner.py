@@ -18,3 +18,12 @@ def scan_network(ip_range):
 
     # Send the packet and capture responses
     responses, _ = srp(packet, timeout=2, verbose=False)
+    # Parse the responses to extract IP and MAC addresses
+    devices = []
+    for response in responses:
+        devices.append({
+            "ip": response[1].psrc,
+            "mac": response[1].hwsrc
+        })
+
+    return devices

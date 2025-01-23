@@ -13,3 +13,8 @@ def scan_network(ip_range):
     # Create an ARP request packet
     arp_request = ARP(pdst=ip_range)
     # Create an Ethernet frame to wrap the ARP request
+    broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
+    packet = broadcast / arp_request
+
+    # Send the packet and capture responses
+    responses, _ = srp(packet, timeout=2, verbose=False)

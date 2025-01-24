@@ -10,3 +10,6 @@ def scan_network(ip_range):
     Returns:
         list: A list of dictionaries containing IP and MAC addresses of active devices.
     """
+    # Create an ARP request packet
+    arp_request = ARP(pdst=ip_range)
+    # Create an Ethernet frame to wrap the ARP request

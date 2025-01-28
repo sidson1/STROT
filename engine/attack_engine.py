@@ -12,7 +12,7 @@ class AttackEngine:
 
         pass
 
-    def exploit(self, exploit_path: str):
+    def exploit(self, exploit_path: str) -> any:
         pass
 
     def feedback(self):

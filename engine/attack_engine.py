@@ -15,8 +15,8 @@ class AttackEngine:
     def exploit(self, exploit_path: str) -> None:
         return None
 
-    def feedback(self):
-        pass
+    def feedback(self) -> None:
+        return
 
     def exploit_search(self, query: str) -> dict:
         """

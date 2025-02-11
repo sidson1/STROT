@@ -1,4 +1,5 @@
 import nmap
+
 def service_scan(target_ip):
     """
     Runs an Nmap service scan on the given IP address.
@@ -11,11 +12,12 @@ def service_scan(target_ip):
     """
     # Create an Nmap PortScanner object
     nm = nmap.PortScanner()
+
     try:
         print(f"Scanning IP: {target_ip} for services...")
         # Run the service scan
         # scan_result = nm.scan(hosts=target_ip, arguments="-sV", timeout=1000)
-        scan_result = nm.scan(hosts=target_ip, arguments="-sV", timeout=1000)
+        scan_result = nm.scan(hosts=target_ip, arguments="-r", timeout=1000)
 
         # Check if the scan was successful
         if target_ip in scan_result['scan']:
@@ -43,19 +45,21 @@ def service_scan(target_ip):
         return {
             "status": "error",
             "message": str(e)
-
         }
+
 if __name__ == "__main__":
     # Input IP address
     target_ip = input("Enter the IP address to scan for services: ")
+
     # Perform the service scan
     result = service_scan(target_ip)
+
     if result['status'] == "success":
         print("\nService Scan Results:")
         print("Port\tState\tName\tProduct\tVersion")
         print("----------------------------------------------------------")
         for service in result['services']:
-            print(
-                f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
+            print(f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
     else:
         print(f"Error: {result['message']}")
+

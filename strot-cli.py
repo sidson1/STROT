@@ -1,19 +1,44 @@
 import socket
+import sys
+import json
 from scapy.all import ARP, Ether, srp
 import nmap
 import attack_engine
+from attack_engine.exploit_search import search_exploit
 
 
 class STROTCLI:
     def __init__(self, *args, **kwargs) -> None:
-        '''
+        """
             STROT - CLI initializer
-        '''
+        """
+        self.__standard_os: list = [
+            "AIX", "Alpha", "Android", "ARM", "ASHX", "ASP", "ASPX", "AtheOS", "BeOS", "BSD",
+            "BSDi_x86", "BSD_PPC", "BSD_x86", "CFM", "CGI", "eZine", "FreeBSD", "FreeBSD_x86",
+            "FreeBSD_x86-64", "Generator", "Go", "Hardware", "HP-UX", "Immunix", "iOS", "IRIX",
+            "Java", "JSON", "JSP", "Linux", "Linux_CRISv32", "Linux_MIPS", "Linux_PPC",
+            "Linux_SPARC", "Linux_x86", "Linux_x86-64", "Lua", "macOS", "Magazine", "MINIX",
+            "Multiple", "NetBSD_x86", "Netware", "NodeJS", "Novell", "OpenBSD", "OpenBSD_x86",
+            "OSX", "OSX_PPC", "Palm_OS", "Perl", "PHP", "Plan9", "Python", "Python2", "Python3",
+            "QNX", "Ruby", "SCO", "SCO_x86", "Solaris", "Solaris_MIPS", "Solaris_SPARC",
+            "Solaris_x86", "SuperH_SH4", "System_z", "Tru64", "TypeScript", "ULTRIX", "Unix",
+            "UnixWare", "VxWorks", "watchOS", "Windows", "Windows_x86", "Windows_x86-64", "XML"
+        ]
+        self.__os_target: str = ""
+        self.__services_target: dict = {}
+        self.__versions_target: dict = {}
+
+        self._driver()
+
+    def _driver(self):
+
+        # Get Network IP of Host Machine
         print("-" * 20, "\nGetting the Private IP of Host...")
-        self.privateIP = self.get_privateIp()
-        self.privateIP_range = self.get_privateIP_range()
+        self.privateIP = self.get_private_ip()
+        self.privateIP_range = self.get_private_ip_range()
         print("Private IP of Host Machine:", self.privateIP)
 
+        # Scanning the network for devices
         print("-" * 20, "\nScanning the network...")
         self.devices_in_network = self.network_scanner()
 
@@ -25,19 +50,26 @@ class STROTCLI:
                 print(f"{device['ip']}\t\t{device['mac']}")
         else:
             print("No devices found.")
+            print("-" * 20 + "exiting")
+            sys.exit(0)
 
+        # Setting Target IP
         self.target_ip = ""
         while not self.verify_ip(self.target_ip):
-            self.target_ip = input("-" * 20 + "\nSelect the node ip to be scanned: ")
+            self.target_ip = input("-" * 20 + "\nSelect the node ip to be scanned: ").strip()
+
+        # Scanning OS of Target IP
         os_scan_result = self.os_scanner(self.target_ip)
         if os_scan_result['status'] == "success":
             print("\nOperating System Analysis:")
             for match in os_scan_result['os_matches']:
                 print(f"Name: {match['name']}\nAccuracy: {match['accuracy']}%\n")
+                self.__os_target = self._verify_os(match['name'])
                 break
         else:
             print(f"Error: {os_scan_result['message']}")
 
+        # Scanning Services on Target IP
         service_scan_result = self.service_scan(self.target_ip)
 
         if service_scan_result['status'] == "success":
@@ -45,25 +77,59 @@ class STROTCLI:
             print("Port\tState\tName\tProduct\tVersion")
             print("----------------------------------------------------------")
             for service in service_scan_result['services']:
+                if service['state'] == "open":
+                    self.__services_target[service['port']] = service['name']
                 print(
                     f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
         else:
             print(f"Error: {service_scan_result['message']}")
 
+        # Scanning for Versions on Target IP
         version_scan_result = self.version_scan(self.target_ip)
 
         if version_scan_result['status'] == "success":
             print("\nVersion Scan Results:")
             print("Port\tState\tName\tProduct\tVersion")
             print("----------------------------------------------------------")
-            for service in version_scan_result['services']:
+            for version in version_scan_result['services']:
+                if version['state'] == "open":
+                    self.__versions_target[version['port']] = version['name']
                 print(
-                    f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
+                    f"{version['port']}\t{version['state']}\t{version['name']}\t{version['product']}\t{version['version']}")
         else:
             print(f"Error: {version_scan_result['message']}")
 
+        # Displaying Findings
+        print("-" * 20 + "\nself.__os_target:", self.__os_target)
+        print("self.__services_target:", self.__services_target)
+        print("self.__versions_target:", self.__versions_target)
+
+        # Search for Exploit
+        print("-" * 20)
+        for k in self.__services_target.keys():
+            if self.__versions_target.get(k):
+                query = f"{self.__services_target[k]} {self.__versions_target[k]} remote py"
+            else:
+                query = f"{self.__services_target[k]} remote py"
+            result = search_exploit(query)
+
+            if result['status'] == "success":
+                print(f"\nExploit Search Results for {self.__services_target[k]} {self.__versions_target[k]}:")
+                print(json.dumps(result['data'], indent=4))
+                print("Exploit Count:", len(result['data']["RESULTS_EXPLOIT"]))
+            else:
+                print(f"Error: {result['message']}")
+            print("-" * 20)
+
+    def _verify_os(self, os_desc: str) -> str:
+        for d in os_desc.strip().split(" "):
+            if d in self.__standard_os:
+                print("Re-Verified OS is:", d)
+                return d
+        return ""
+
     @staticmethod
-    def get_privateIp() -> str:
+    def get_private_ip() -> str:
         '''
             get_privateIP is a staticmethod that returns 
             the Private IP address of the host machine
@@ -87,7 +153,7 @@ class STROTCLI:
         except:
             return False
 
-    def get_privateIP_range(self) -> str:
+    def get_private_ip_range(self) -> str:
         range = ".".join(self.privateIP.split(".")[:-1]) + ".0/24"
         return range
 
@@ -254,4 +320,4 @@ class STROTCLI:
 
 
 if __name__ == "__main__":
-    obj = STROT_CLI()
+    obj = STROTCLI()

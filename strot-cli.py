@@ -4,7 +4,7 @@ import nmap
 import attack_engine
 
 
-class STROT_CLI:
+class STROTCLI:
     def __init__(self, *args, **kwargs) -> None:
         '''
             STROT - CLI initializer

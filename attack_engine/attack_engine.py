@@ -1,7 +1,6 @@
 import subprocess
 import json
 import os
-print("Attack Engine loaded...")
 
 
 class AttackEngine:

@@ -1,19 +1,20 @@
 import socket
 from scapy.all import ARP, Ether, srp
 import nmap
-from attack_engine import *
+import attack_engine
+
 
 class STROT_CLI:
     def __init__(self, *args, **kwargs) -> None:
         '''
             STROT - CLI initializer
         '''
-        print("-"*20, "\nGetting the Private IP of Host...")
+        print("-" * 20, "\nGetting the Private IP of Host...")
         self.privateIP = self.get_privateIp()
         self.privateIP_range = self.get_privateIP_range()
         print("Private IP of Host Machine:", self.privateIP)
 
-        print("-"*20, "\nScanning the network...")
+        print("-" * 20, "\nScanning the network...")
         self.devices_in_network = self.network_scanner()
 
         if self.devices_in_network:
@@ -27,8 +28,8 @@ class STROT_CLI:
 
         self.target_ip = ""
         while not self.verify_ip(self.target_ip):
-            self.target_ip = input("-"*20 + "\nSelect the node ip to be scanned: ")
-        os_scan_result = self.os_scanner(self.target_ip)    
+            self.target_ip = input("-" * 20 + "\nSelect the node ip to be scanned: ")
+        os_scan_result = self.os_scanner(self.target_ip)
         if os_scan_result['status'] == "success":
             print("\nOperating System Analysis:")
             for match in os_scan_result['os_matches']:
@@ -44,7 +45,8 @@ class STROT_CLI:
             print("Port\tState\tName\tProduct\tVersion")
             print("----------------------------------------------------------")
             for service in service_scan_result['services']:
-                print(f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
+                print(
+                    f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
         else:
             print(f"Error: {service_scan_result['message']}")
 
@@ -55,7 +57,8 @@ class STROT_CLI:
             print("Port\tState\tName\tProduct\tVersion")
             print("----------------------------------------------------------")
             for service in version_scan_result['services']:
-                print(f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
+                print(
+                    f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
         else:
             print(f"Error: {version_scan_result['message']}")
 
@@ -71,7 +74,7 @@ class STROT_CLI:
         s.close()
 
         return ip_address
-    
+
     @staticmethod
     def verify_ip(ip_address) -> bool:
         try:
@@ -83,7 +86,7 @@ class STROT_CLI:
                 return False
         except:
             return False
-        
+
     def get_privateIP_range(self) -> str:
         range = ".".join(self.privateIP.split(".")[:-1]) + ".0/24"
         return range
@@ -117,7 +120,7 @@ class STROT_CLI:
             })
 
         return devices
-    
+
     def os_scanner(self, target_ip) -> str:
         """
         Analyzes the operating system of a given IP address using nmap.
@@ -132,10 +135,10 @@ class STROT_CLI:
         nm = nmap.PortScanner()
 
         try:
-            print("-"*20, f"\nScanning IP: {target_ip} for OS detection...")
+            print("-" * 20, f"\nScanning IP: {target_ip} for OS detection...")
             # Run the OS detection scan
             scan_result = nm.scan(hosts=target_ip, arguments="-O", timeout=30)
-            
+
             # Check if the scan was successful
             if 'osmatch' in scan_result['scan'][target_ip]:
                 os_matches = scan_result['scan'][target_ip]['osmatch']
@@ -154,7 +157,7 @@ class STROT_CLI:
                 "status": "error",
                 "message": str(e)
             }
-        
+
     def service_scan(self, target_ip):
         """
         Runs an Nmap service scan on the given IP address.
@@ -169,7 +172,7 @@ class STROT_CLI:
         nm = nmap.PortScanner()
 
         try:
-            print("-"*20, f"\nScanning IP: {target_ip} for services...")
+            print("-" * 20, f"\nScanning IP: {target_ip} for services...")
             # Run the service scan
             # scan_result = nm.scan(hosts=target_ip, arguments="-sV", timeout=1000)
             scan_result = nm.scan(hosts=target_ip, arguments="-r", timeout=1000)
@@ -201,7 +204,7 @@ class STROT_CLI:
                 "status": "error",
                 "message": str(e)
             }
-            
+
     def version_scan(self, target_ip):
         """
         Runs an Nmap service scan on the given IP address.
@@ -216,7 +219,7 @@ class STROT_CLI:
         nm = nmap.PortScanner()
 
         try:
-            print("-"*20, f"\nScanning IP: {target_ip} for services...")
+            print("-" * 20, f"\nScanning IP: {target_ip} for services...")
             # Run the service scan
             scan_result = nm.scan(hosts=target_ip, arguments="-sV", timeout=1000)
             # scan_result = nm.scan(hosts=target_ip, arguments="-r", timeout=1000)

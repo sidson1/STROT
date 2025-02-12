@@ -16,8 +16,8 @@ def service_scan(target_ip):
     try:
         print(f"Scanning IP: {target_ip} for services...")
         # Run the service scan
-        # scan_result = nm.scan(hosts=target_ip, arguments="-sV", timeout=1000)
-        scan_result = nm.scan(hosts=target_ip, arguments="-r", timeout=1000)
+        scan_result = nm.scan(hosts=target_ip, arguments="-sV", timeout=1000)
+        # scan_result = nm.scan(hosts=target_ip, arguments="-r", timeout=1000)
 
         # Check if the scan was successful
         if target_ip in scan_result['scan']:

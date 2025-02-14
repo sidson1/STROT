@@ -1,6 +1,8 @@
 import socket
 import sys
 import json
+from typing import Dict, Any
+
 from scapy.all import ARP, Ether, srp
 import nmap
 import attack_engine
@@ -28,15 +30,20 @@ class STROTCLI:
         self.__services_target: dict = {}
         self.__versions_target: dict = {}
 
-        self._driver()
+        self._driver_init()
+        while self._driver() != 0:
+            pass
 
-    def _driver(self):
-
+    def _driver_init(self):
         # Get Network IP of Host Machine
         print("-" * 20, "\nGetting the Private IP of Host...")
         self.privateIP = self.get_private_ip()
         self.privateIP_range = self.get_private_ip_range()
         print("Private IP of Host Machine:", self.privateIP)
+
+        input("\n\nStart scan\t<Enter>\nExit\t\t<ctrl> + c\n")
+
+    def _driver(self):
 
         # Scanning the network for devices
         print("-" * 20, "\nScanning the network...")
@@ -44,10 +51,10 @@ class STROTCLI:
 
         if self.devices_in_network:
             print("\nDevices found in the network:")
-            print("IP Address\t\tMAC Address")
-            print("-----------------------------------------")
-            for device in self.devices_in_network:
-                print(f"{device['ip']}\t\t{device['mac']}")
+            print("Index\tIP Address\t\tMAC Address")
+            print("--------------------------------------------------")
+            for ind, device in enumerate(self.devices_in_network):
+                print(f"{ind}\t{device['ip']}\t\t{device['mac']}")
         else:
             print("No devices found.")
             print("-" * 20 + "exiting")
@@ -56,7 +63,14 @@ class STROTCLI:
         # Setting Target IP
         self.target_ip = ""
         while not self.verify_ip(self.target_ip):
-            self.target_ip = input("-" * 20 + "\nSelect the node ip to be scanned: ").strip()
+            usr_inp = input("-" * 20 + "\nSelect the node ip to be scanned: ").strip()
+            if "." not in usr_inp:
+                try:
+                    self.target_ip = self.devices_in_network[int(usr_inp)]['ip']
+                except (IndexError, ValueError):
+                    pass
+            else:
+                self.target_ip = usr_inp
 
         # Scanning OS of Target IP
         os_scan_result = self.os_scanner(self.target_ip)
@@ -68,6 +82,13 @@ class STROTCLI:
                 break
         else:
             print(f"Error: {os_scan_result['message']}")
+
+        while 1:
+            usr_inp = input("\n\nContinue scan\t\t<Enter>\nChange node\t\tchange (c)\n")
+            if usr_inp in ["Change", "change", "C", "c"]:
+                return 1
+            if usr_inp == "":
+                break
 
         # Scanning Services on Target IP
         service_scan_result = self.service_scan(self.target_ip)
@@ -120,6 +141,7 @@ class STROTCLI:
             else:
                 print(f"Error: {result['message']}")
             print("-" * 20)
+        return 0
 
     def _verify_os(self, os_desc: str) -> str:
         for d in os_desc.strip().split(" "):
@@ -135,7 +157,12 @@ class STROTCLI:
             the Private IP address of the host machine
         '''
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))  # Connect to an external server (Google DNS)
+        try:
+            s.connect(("8.8.8.8", 80))  # Connect to an external server (Google DNS)
+        except OSError as ose:
+            print(ose)
+            print("Exiting...")
+            sys.exit(1)
         ip_address = s.getsockname()[0]  # Get the IP address of the machine
         s.close()
 
@@ -175,7 +202,7 @@ class STROTCLI:
         packet = broadcast / arp_request
 
         # Send the packet and capture responses
-        responses, _ = srp(packet, timeout=2, verbose=False)
+        responses, _ = srp(packet, timeout=5, verbose=False)
 
         # Parse the responses to extract IP and MAC addresses
         devices = []
@@ -187,7 +214,7 @@ class STROTCLI:
 
         return devices
 
-    def os_scanner(self, target_ip) -> str:
+    def os_scanner(self, target_ip) -> dict[str, str | Any] | dict[str, str] | dict[str, str]:
         """
         Analyzes the operating system of a given IP address using nmap.
 
@@ -197,14 +224,15 @@ class STROTCLI:
         Returns:
             dict: Information about the operating system or an error message.
         """
-        # Create an Nmap PortScanner object
+        # Create a Nmap PortScanner object
         nm = nmap.PortScanner()
 
         try:
             print("-" * 20, f"\nScanning IP: {target_ip} for OS detection...")
             # Run the OS detection scan
-            scan_result = nm.scan(hosts=target_ip, arguments="-O", timeout=30)
-
+            print(1)
+            scan_result = nm.scan(hosts=target_ip, arguments="-O", timeout=1000)
+            print(2)
             # Check if the scan was successful
             if 'osmatch' in scan_result['scan'][target_ip]:
                 os_matches = scan_result['scan'][target_ip]['osmatch']
@@ -273,7 +301,7 @@ class STROTCLI:
 
     def version_scan(self, target_ip):
         """
-        Runs an Nmap service scan on the given IP address.
+        Runs a Nmap service scan on the given IP address.
 
         Args:
             target_ip (str): The IP address to scan.

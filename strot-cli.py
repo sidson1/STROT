@@ -348,4 +348,4 @@ class STROTCLI:
 
 
 if __name__ == "__main__":
-    obj = STROTCLI()
+    obj = STROTCLI( )

@@ -12,9 +12,9 @@ from attack_engine.exploit_search import search_exploit
 class STROTCLI:
     def __init__(self, *args, **kwargs) -> None:
         """
-            STROT - CLI initializer
+            STROTCLI - CLI initializer
         """
-        self.__standard_os: list = [
+        self.__standard _os: list = [
             "AIX", "Alpha", "Android", "ARM", "ASHX", "ASP", "ASPX", "AtheOS", "BeOS", "BSD",
             "BSDi_x86", "BSD_PPC", "BSD_x86", "CFM", "CGI", "eZine", "FreeBSD", "FreeBSD_x86",
             "FreeBSD_x86-64", "Generator", "Go", "Hardware", "HP-UX", "Immunix", "iOS", "IRIX",
@@ -101,7 +101,8 @@ class STROTCLI:
                 if service['state'] == "open":
                     self.__services_target[service['port']] = service['name']
                 print(
-                    f"{service['port']}\t{service['state']}\t{service['name']}\t{service['product']}\t{service['version']}")
+                    f"{service['port']}\t{service['state']}\t{service['name']}"
+                    f"\t{service['product']}\t{service['version']}")
         else:
             print(f"Error: {service_scan_result['message']}")
 
@@ -116,7 +117,8 @@ class STROTCLI:
                 if version['state'] == "open":
                     self.__versions_target[version['port']] = version['name']
                 print(
-                    f"{version['port']}\t{version['state']}\t{version['name']}\t{version['product']}\t{version['version']}")
+                    f"{version['port']}\t{version['state']}\t{version['name']}\t{version['product']}"
+                    f"\t{version['version']}")
         else:
             print(f"Error: {version_scan_result['message']}")
 
@@ -152,10 +154,10 @@ class STROTCLI:
 
     @staticmethod
     def get_private_ip() -> str:
-        '''
-            get_privateIP is a staticmethod that returns 
+        """
+            get_privateIP is a staticmethod that returns
             the Private IP address of the host machine
-        '''
+        """
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         try:
             s.connect(("8.8.8.8", 80))  # Connect to an external server (Google DNS)
@@ -177,14 +179,14 @@ class STROTCLI:
                 return True
             else:
                 return False
-        except:
+        except Exception as e:
             return False
 
     def get_private_ip_range(self) -> str:
-        range = ".".join(self.privateIP.split(".")[:-1]) + ".0/24"
-        return range
+        ip_range = ".".join(self.privateIP.split(".")[:-1]) + ".0/24"
+        return ip_range
 
-    def network_scanner(self) -> list:
+    def network_scanner(self, ip_range: str = "") -> list:
         """
         Scans the network for active devices within the specified IP range.
 
@@ -195,7 +197,8 @@ class STROTCLI:
             list: A list of dictionaries containing IP and MAC addresses of active devices.
         """
         # Create an ARP request packet
-        ip_range = self.privateIP_range
+        if len(ip_range) == 0:
+            ip_range = self.privateIP_range
         arp_request = ARP(pdst=ip_range)
         # Create an Ethernet frame to wrap the ARP request
         broadcast = Ether(dst="ff:ff:ff:ff:ff:ff")
@@ -214,7 +217,8 @@ class STROTCLI:
 
         return devices
 
-    def os_scanner(self, target_ip) -> dict[str, str | Any] | dict[str, str] | dict[str, str]:
+    @staticmethod
+    def os_scanner(target_ip) -> dict[str, str | Any] | dict[str, str] | dict[str, str]:
         """
         Analyzes the operating system of a given IP address using nmap.
 
@@ -252,9 +256,10 @@ class STROTCLI:
                 "message": str(e)
             }
 
-    def service_scan(self, target_ip):
+    @staticmethod
+    def service_scan(target_ip):
         """
-        Runs an Nmap service scan on the given IP address.
+        Runs a Nmap service scan on the given IP address.
 
         Args:
             target_ip (str): The IP address to scan.
@@ -262,7 +267,7 @@ class STROTCLI:
         Returns:
             dict: Information about the services or an error message.
         """
-        # Create an Nmap PortScanner object
+        # Create a Nmap PortScanner object
         nm = nmap.PortScanner()
 
         try:
@@ -299,7 +304,8 @@ class STROTCLI:
                 "message": str(e)
             }
 
-    def version_scan(self, target_ip):
+    @staticmethod
+    def version_scan(target_ip):
         """
         Runs a Nmap service scan on the given IP address.
 
@@ -309,7 +315,7 @@ class STROTCLI:
         Returns:
             dict: Information about the services or an error message.
         """
-        # Create an Nmap PortScanner object
+        # Create a Nmap PortScanner object
         nm = nmap.PortScanner()
 
         try:

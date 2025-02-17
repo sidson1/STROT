@@ -14,7 +14,7 @@ class STROTCLI:
         """
             STROTCLI - CLI initializer
         """
-        self.__standard _os: list = [
+        self.__standard_os: list = [
             "AIX", "Alpha", "Android", "ARM", "ASHX", "ASP", "ASPX", "AtheOS", "BeOS", "BSD",
             "BSDi_x86", "BSD_PPC", "BSD_x86", "CFM", "CGI", "eZine", "FreeBSD", "FreeBSD_x86",
             "FreeBSD_x86-64", "Generator", "Go", "Hardware", "HP-UX", "Immunix", "iOS", "IRIX",

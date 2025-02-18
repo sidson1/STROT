@@ -19,7 +19,7 @@ class STROTCLI:
             "BSDi_x86", "BSD_PPC", "BSD_x86", "CFM", "CGI", "eZine", "FreeBSD", "FreeBSD_x86",
             "FreeBSD_x86-64", "Generator", "Go", "Hardware", "HP-UX", "Immunix", "iOS", "IRIX",
             "Java", "JSON", "JSP", "Linux", "Linux_CRISv32", "Linux_MIPS", "Linux_PPC",
-            "Linux_SPARC", "Linux_x86", "Linux_x86-64", "Lua", "macOS", "Magazine", "MINIX",
+            "Linux_SPARC", "Linux_x86", "Linux_x86-64", "Lua", "macOS", "Mac OS", "Magazine", "MINIX",
             "Multiple", "NetBSD_x86", "Netware", "NodeJS", "Novell", "OpenBSD", "OpenBSD_x86",
             "OSX", "OSX_PPC", "Palm_OS", "Perl", "PHP", "Plan9", "Python", "Python2", "Python3",
             "QNX", "Ruby", "SCO", "SCO_x86", "Solaris", "Solaris_MIPS", "Solaris_SPARC",
@@ -138,7 +138,7 @@ class STROTCLI:
 
             if result['status'] == "success":
                 print(f"\nExploit Search Results for {self.__services_target[k]} {self.__versions_target[k]}:")
-                print(json.dumps(result['data'], indent=4))
+                print(json.dumps(result['data']["RESULTS_EXPLOIT"], indent=4))
                 print("Exploit Count:", len(result['data']["RESULTS_EXPLOIT"]))
             else:
                 print(f"Error: {result['message']}")

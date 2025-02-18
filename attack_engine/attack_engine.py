@@ -18,7 +18,8 @@ class AttackEngine:
     def feedback(self) -> None:
         return
 
-    def exploit_search(self, query: str) -> dict:
+    @staticmethod
+    def exploit_search(query: str) -> dict:
         """
         Searches for exploits related to a given query using searchsploit.
 
@@ -37,12 +38,12 @@ class AttackEngine:
             query = query + " remote py"
         try:
             print(f"Searching for exploits related to: {query}...")
-            result = subprocess.run(["searchsploit", query, "--json"], capture_output=True, text=True, timeout=30)
+            result_ = subprocess.run(["searchsploit", query, "--json"], capture_output=True, text=True, timeout=30)
 
-            if result.returncode == 0:
+            if result_.returncode == 0:
                 return {
                     "status": "success",
-                    "data": json.loads(result.stdout)
+                    "data": json.loads(result_.stdout)
                 }
             else:
                 return {

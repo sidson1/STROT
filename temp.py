@@ -1,57 +1,35 @@
-# importing modules
-from reportlab.pdfgen import canvas
-from reportlab.pdfbase.ttfonts import TTFont
-from reportlab.pdfbase import pdfmetrics
-from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph
+from reportlab.lib.enums import TA_JUSTIFY
 
-# initializing variables with values
-fileName = 'sample.pdf'
-documentTitle = 'sample'
-title = 'Technology'
-subTitle = 'The largest thing now!!'
-textLines = [
-	'Technology makes us aware of',
-	'the world around us.',
-]
-image = 'image.jpg'
 
-# creating a pdf object
-pdf = canvas.Canvas(fileName)
+def create_pdf(filename, text):
+    doc = SimpleDocTemplate(filename, pagesize=A4)
 
-# setting the title of the document
-pdf.setTitle(documentTitle)
+    # Define a custom style with justified alignment
+    styles = getSampleStyleSheet()
+    justified_style = ParagraphStyle(
+        'Justify',
+        parent=styles['Normal'],
+        fontName="Times-Roman",
+        fontSize=12,
+        leading=16,  # Line spacing
+        alignment=TA_JUSTIFY  # Justify the text
+    )
 
-# registering a external font in python
-pdfmetrics.registerFont(
-	TTFont('abc', 'SakBunderan.ttf')
-)
+    # Create a Paragraph to handle long text with automatic line breaks and justification
+    content = Paragraph(text, justified_style)
 
-# creating the title by setting it's font
-# and putting it on the canvas
-pdf.setFont('abc', 36)
-pdf.drawCentredString(300, 770, title)
+    # Build PDF
+    doc.build([content])
+    print(f"PDF '{filename}' created successfully with justified text.")
 
-# creating the subtitle by setting it's font,
-# colour and putting it on the canvas
-pdf.setFillColorRGB(0, 0, 255)
-pdf.setFont("Courier-Bold", 24)
-pdf.drawCentredString(290, 720, subTitle)
 
-# drawing a line
-pdf.line(30, 710, 550, 710)
+# Sample large content
+large_text = """This is a long text that will automatically wrap onto the next line when it reaches the end of the page. 
+This ensures that the text does not overflow and continues onto the next lines properly. 
+By setting the alignment to 'justify', the text will be evenly distributed across the width of the page. 
+This improves readability and makes the document look more professional."""
 
-# creating a multiline text using
-# textline and for loop
-text = pdf.beginText(40, 680)
-text.setFont("Courier", 18)
-text.setFillColor(colors.red)
-for line in textLines:
-	text.textLine(line)
-pdf.drawText(text)
-
-# drawing a image at the
-# specified (x.y) position
-pdf.drawInlineImage(image, 130, 400)
-
-# saving the pdf
-pdf.save()
+create_pdf("output.pdf", large_text)

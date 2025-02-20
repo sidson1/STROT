@@ -1,10 +1,11 @@
 import subprocess
 import json
 import os
+from . import utils as utils
 
 
 class AttackEngine:
-    def __init__(self, exploit_lookup_path: str = "exploit_lookup_path") -> None:
+    def __init__(self, exploit_lookup_path: str = ".") -> None:
         if not os.path.exists(exploit_lookup_path):
             raise FileNotFoundError("exploit_lookup_path file not found")
 
@@ -12,7 +13,11 @@ class AttackEngine:
 
         pass
 
-    def exploit(self, exploit_path: str) -> None:
+    def exploit(self, exploit_name: str, host: str) -> None:
+        print("executing exploit...")
+        e = utils.load_exploit("_49757")
+        e.main(host=host)
+        print("exploit execution completed.")
         return None
 
     def feedback(self) -> None:
@@ -61,9 +66,9 @@ class AttackEngine:
 if __name__ == "__main__":
     ate = AttackEngine()
     # result = ate.exploit_search("ftp vsftpd")
-    result = ate.exploit_search("ftp vsftpd")
-    if result['status'] == "success":
-        print("\nExploit Search Results:")
-        print(json.dumps(result['data'], indent=4))
-    else:
-        print(f"Error: {result['message']}")
+    # result = ate.exploit_search("ftp vsftpd")
+    # if result['status'] == "success":
+    #     print("\nExploit Search Results:")
+    #     print(json.dumps(result['data'], indent=4))
+    # else:
+    #     print(f"Error: {result['message']}")

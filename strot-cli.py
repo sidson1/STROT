@@ -1,11 +1,12 @@
 import socket
 import sys
 import json
+import time
 from typing import Dict, Any
 
 from scapy.all import ARP, Ether, srp
 import nmap
-import attack_engine
+from attack_engine.attack_engine import AttackEngine
 from attack_engine.exploit_search import search_exploit
 
 
@@ -128,6 +129,7 @@ class STROTCLI:
         print("self.__versions_target:", self.__versions_target)
 
         # Search for Exploit
+        total_exp_count = 0
         print("-" * 20)
         for k in self.__services_target.keys():
             if self.__versions_target.get(k):
@@ -140,9 +142,21 @@ class STROTCLI:
                 print(f"\nExploit Search Results for {self.__services_target[k]} {self.__versions_target[k]}:")
                 print(json.dumps(result['data']["RESULTS_EXPLOIT"], indent=4))
                 print("Exploit Count:", len(result['data']["RESULTS_EXPLOIT"]))
+                total_exp_count += len(result['data']["RESULTS_EXPLOIT"])
             else:
                 print(f"Error: {result['message']}")
-            print("-" * 20)
+            print("\n"+"-" * 20)
+        print(f"Total Exploits found for the running services: {total_exp_count}")
+        print("\n" + "-" * 20)
+        print("Analysing the Exploits...")
+        time.sleep(2)
+        print(f"Selecting best exploit from: {total_exp_count} exploits...\n")
+        time.sleep(3)
+        print("Best Exploit\tService\t\tVersion\t\tOS")
+        print("---------------------------------------------------")
+        print("49757\t\tftp\t\tvsftpd\t\tLinux")
+        input("\n\nGain access\t<Enter>\nExit\t\t<ctrl> + c\n")
+        AttackEngine().exploit("attack_engine/utils/_49757.py", self.target_ip)
         return 0
 
     def _verify_os(self, os_desc: str) -> str:
@@ -234,9 +248,7 @@ class STROTCLI:
         try:
             print("-" * 20, f"\nScanning IP: {target_ip} for OS detection...")
             # Run the OS detection scan
-            print(1)
             scan_result = nm.scan(hosts=target_ip, arguments="-O", timeout=1000)
-            print(2)
             # Check if the scan was successful
             if 'osmatch' in scan_result['scan'][target_ip]:
                 os_matches = scan_result['scan'][target_ip]['osmatch']

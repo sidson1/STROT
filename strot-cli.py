@@ -149,6 +149,7 @@ class STROTCLI:
         print(f"Total Exploits found for the running services: {total_exp_count}")
         print("\n" + "-" * 20)
         print("Analysing the Exploits...")
+
         time.sleep(2)
         print(f"Selecting best exploit from: {total_exp_count} exploits...\n")
         time.sleep(3)

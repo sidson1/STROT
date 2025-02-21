@@ -1,9 +1,9 @@
+import os
 import socket
 import sys
 import json
 import time
 from typing import Dict, Any
-
 from scapy.all import ARP, Ether, srp
 import nmap
 from attack_engine.attack_engine import AttackEngine
@@ -367,4 +367,8 @@ class STROTCLI:
 
 
 if __name__ == "__main__":
+    os.system('clear')
+    print("starting STROT CLI v2.1.3")
+    print("Stealthy Tool for Root Oriented Tunneling - A RED TEAMING TOOL")
+    time.sleep(2)
     obj = STROTCLI()

